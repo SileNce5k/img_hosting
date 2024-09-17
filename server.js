@@ -1,6 +1,6 @@
 const express = require('express');
 const api = express();
-const port = 3000;
+const port = process.env.PORT;
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path')
