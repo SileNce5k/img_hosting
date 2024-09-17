@@ -1,8 +1,4 @@
-Image hosting.
-I will use rust
 
-I would eventually like to learn rust, so hosting an image site would probably not be a huge task while learning
-a new language.
 
 * The main site should have a simple upload form (with a password).
 * There should be an API such that I could implement it with greenshot.
