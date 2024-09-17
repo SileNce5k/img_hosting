@@ -1,10 +1,10 @@
+require("dotenv").config();
 const express = require('express');
 const api = express();
 const port = process.env.PORT;
 const fs = require('fs');
 const multer = require('multer');
 const path = require('path')
-require("dotenv").config();
 const { execSync } = require('child_process');
 
 
