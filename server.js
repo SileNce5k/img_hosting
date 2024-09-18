@@ -109,7 +109,7 @@ api.post('/api/v1/upload-image', verify_api_key, (req, res, next) => {
 
         let new_filename = `${process.env.IMAGE_LOCATION_PATH}${random_str}.${extension}`
         fs.renameSync(file.path, new_filename)
-        res.status(200).send(`${domain_name}${new_filename}`);
+        res.status(200).send(`${domain_name}${random_str}.${extension}`);
     })
 
 })
