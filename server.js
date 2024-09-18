@@ -1,15 +1,18 @@
-require("dotenv").config();
-const express = require('express');
+import 'dotenv/config'
+import {fileTypeFromFile} from 'file-type';
+import express from 'express'
 const api = express();
 const port = process.env.PORT;
-const fs = require('fs');
-const multer = require('multer');
-const path = require('path')
-const { execSync } = require('child_process');
-
+import fs from 'fs';
+import multer from 'multer'
+import { execSync } from 'child_process'
 
 
 const temporary_path = "temp/";
+if(!fs.readdirSync(temporary_path)){
+        fs.mkdirSync(temporary_path)
+}
+        
 const domain_name = process.env.DOMAIN_NAME;
 
 const storage = multer.diskStorage({
@@ -50,7 +53,7 @@ const upload = multer({
 });
 
 // TODO: Use a database to ensure no duplicates in the future
-function generate_random_string(length = 4) { 
+function generate_random_string(extension, length = 4) { 
     let random_string = "";
     const valid_characters = "ABCDEFGHIJKLMNOPQRSTUVabcdefghijklmnopqrstuvwxyz123456789";
     let num_attempts = 0;
@@ -64,7 +67,7 @@ function generate_random_string(length = 4) {
             random_string = "";
             break;
         }
-    } while (fs.existsSync(`${process.env.IMAGE_LOCATION_PATH}${random_string}`));
+    } while (fs.existsSync(`${process.env.IMAGE_LOCATION_PATH}${random_string}.${extension}`));
     if(num_attempts > 1){
         console.log(`Generated ${random_string} after ${num_attempts} attempts`)
     }
@@ -76,32 +79,37 @@ function generate_random_string(length = 4) {
 
 
 api.post('/api/v1/upload-image', verify_api_key, (req, res, next) => {
-    upload.single('file')(req, res, function (err) {
+    upload.single('file')(req, res, async function (err) {
         if (err) {
             console.error(err.message)            
             res.status(400).send(err.message);
             return
         } 
         const file = req.file;
-    
         if (!file) {
             res.status(400).send('No file uploaded.');
             return
         }
-    
+
+        let extension = (await fileTypeFromFile(file.path)).ext
+        console.log("extension: ", extension)
+        fs.renameSync(file.path, `${file.path}.${extension}`)
+        file.path = `${file.path}.${extension}`
+        
         const command = `exiftool -overwrite_original_in_place -all= ${file.path}`
         execute_command(command);
-    
-        const random_str = generate_random_string();
+        
+        const random_str = generate_random_string(extension);
         if(random_str === ""){
             console.error("Not enough characters to randomly create a string after 1000 attempts\nIncrease length of random string generated")
             res.status(500).send("Internal Server Error\nTell the owner of this website to check their server\nFile was deleted after upload")
             fs.unlinkSync(file.path)
             return
         }
-    
-        fs.renameSync(file.path, `${process.env.IMAGE_LOCATION_PATH}${random_str}`)
-        res.status(200).send(`${domain_name}${random_str}`);
+
+        let new_filename = `${process.env.IMAGE_LOCATION_PATH}${random_str}.${extension}`
+        fs.renameSync(file.path, new_filename)
+        res.status(200).send(`${domain_name}${new_filename}`);
     })
 
 })
