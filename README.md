@@ -1,10 +1,13 @@
 
 
-
 # Step by step:
-* npm install
+* clone repo
+* mkdir build
+* cd build
+* cmake ..
+* make
 * create .env file, example below
-* npm start
+* launch executable
 * Enjoy
 
 ```ini
