@@ -1,6 +1,7 @@
 
 
-# Step by step:
+ <h1>Step by step:</h1>
+
 * clone repo
 * mkdir build
 * cd build
@@ -9,6 +10,9 @@
 * create .env file, example below
 * launch executable
 * Enjoy
+
+
+<h3>.env example</h3>
 
 ```ini
 API_KEY=CACACACACACACACACACA  
