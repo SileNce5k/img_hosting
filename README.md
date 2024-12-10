@@ -1,11 +1,18 @@
 
 
+ <h1>Step by step:</h1>
 
-# Step by step:
-* npm install
+* clone repo
+* mkdir build
+* cd build
+* cmake ..
+* make
 * create .env file, example below
-* npm start
+* launch executable
 * Enjoy
+
+
+<h3>.env example</h3>
 
 ```ini
 API_KEY=CACACACACACACACACACA  
