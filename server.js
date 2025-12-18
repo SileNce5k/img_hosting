@@ -5,7 +5,8 @@ const api = express();
 const port = process.env.PORT;
 import fs from 'fs';
 import multer from 'multer'
-import { execSync } from 'child_process'
+const { execFileSync } = require('child_process');
+
 
 
 const temporary_path = "temp/";
@@ -114,17 +115,19 @@ api.post('/api/v1/upload-image', verify_api_key, (req, res, next) => {
 
 })
 
-function execute_command(command) {
-    console.log("Executing:", command)
+function execute_command(command, commandArgs, verbose=false) {
+    if (typeof command !== 'string' || !Array.isArray(commandArgs)) return { error: true, error_message: "Command must be string, and arguments must be an array" };
+    console.log("Executing:", command, commandArgs.join(" "));
+    let output;
     try {
-        const output = execSync(command, { encoding: 'utf-8' })
-        if (output.length != 0)
+        output = execFileSync(command, commandArgs, {encoding: 'utf8'})
+        if (output.length !== 0 && verbose)
             console.log(output)
     } catch (error) {
-        console.error(`Error executing command:`, error);
-        return { error: true };
+        console.error(`Error executing ${command} command:`, error);
+        return { error: true, error_message: error};
     }
-    return { error: false };
+    return { error: false, output};
 }
 
 api.listen(port, () => {
